@@ -101,6 +101,40 @@ Initially, we find the Bounding Box (minX, maxX, minY, maxY) of our triangle in 
 the area that we will scan. Now that we have our Bounding Box, we will loop every pixel inside
 it, and for each pixel we will run the edge function for each line of the triangle.
 
+### Performance Comparison
+In order to compare the difference in performance between bbox and no bbox solutions, we ran our code 5 times
+for each scenario and retrieved the average of the execution times for each of one of them.
+
+#### No Bounding Box
+    Execution time: 12.330230000000004
+
+    Execution time: 13.894848999999997
+
+    Execution time: 12.862837000000003
+
+    Execution time: 14.310848
+
+    Execution time: 13.186808000000001
+
+    Average Execution Time: 13.3171144
+
+#### With Bounding Box
+
+    Execution time: 7.493442
+    
+    Execution time: 7.607043000000001
+    
+    Execution time: 8.735713
+    
+    Execution time: 9.333058
+    
+    Execution time: 8.463237000000001
+    
+    Average Execution Time: 8.3264986
+
+Our results indicate that the average run time of the b-box solution is 1.6 times faster than the solution that 
+does not utilize b-boxes.
+
 
 ## Animation
 ![Image Result](frames/frame_000.png "Image Result")
