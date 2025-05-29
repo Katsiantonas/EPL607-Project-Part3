@@ -1,6 +1,11 @@
+from datetime import datetime
+
 from PIL import Image
 import math
 import numpy as np
+
+
+USE_BBOX = True
 
 
 class Vector:
@@ -69,6 +74,7 @@ class Renderer:
         self.image = Image.new("RGB", (width, height))
         self.pixels = self.image.load()
         self.zbuffer = [[float('inf')] * width for _ in range(height)]
+        self.execution_time = 0
 
     def project(self, v):
         x = int((v.x + 1) * self.width / 2)
@@ -80,11 +86,19 @@ class Renderer:
         p1 = self.project(tri.v1)
         p2 = self.project(tri.v2)
 
-        min_x = max(min(p0.x, p1.x, p2.x), 0)
-        max_x = min(max(p0.x, p1.x, p2.x), self.width - 1)
-        min_y = max(min(p0.y, p1.y, p2.y), 0)
-        max_y = min(max(p0.y, p1.y, p2.y), self.height - 1)
+        if USE_BBOX:
+            min_x = max(min(p0.x, p1.x, p2.x), 0)
+            max_x = min(max(p0.x, p1.x, p2.x), self.width - 1)
+            min_y = max(min(p0.y, p1.y, p2.y), 0)
+            max_y = min(max(p0.y, p1.y, p2.y), self.height - 1)
 
+        else:
+            min_x = 0
+            max_x = width
+            min_y = 0
+            max_y = height
+
+        time_start = datetime.now()
         for y in range(min_y, max_y+1):
             for x in range(min_x, max_x+1):
                 w0, w1, w2 = barycentric(Vector(x, y, 0), p0, p1, p2)
@@ -106,6 +120,8 @@ class Renderer:
                     int(color.y * 255),
                     int(color.z * 255)
                 )
+        time_end = datetime.now()
+        self.execution_time += (time_end - time_start).total_seconds()
 
     def shade_pixel(self, pos, normal, material):
         to_light = (self.light.position - pos).normalize()
@@ -185,6 +201,8 @@ if __name__ == "__main__":
         red_material
     )
 
+    execution_time = 0
+
     for frame in range(60):
         angle = frame * (2 * math.pi / 60)
         transform = translate(0, 0, 0) @ rotate_y(angle) @ scale(1, 1, 1)
@@ -201,6 +219,9 @@ if __name__ == "__main__":
         renderer = Renderer(width, height, camera_pos, light)
         renderer.render_triangle(tri)
 
-        filename = f"frames/frame_{frame:03d}.png"
+        filename = f"frames25/frame_{frame:03d}.png"
+        execution_time += renderer.execution_time
         renderer.image.save(filename)
         print(f"Saved {filename}")
+
+    print(f"Execution time: {execution_time}")
