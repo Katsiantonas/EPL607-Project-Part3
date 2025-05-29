@@ -201,6 +201,6 @@ if __name__ == "__main__":
         renderer = Renderer(width, height, camera_pos, light)
         renderer.render_triangle(tri)
 
-        filename = f"frame_{frame:03d}.png"
+        filename = f"frames/frame_{frame:03d}.png"
         renderer.image.save(filename)
         print(f"Saved {filename}")
